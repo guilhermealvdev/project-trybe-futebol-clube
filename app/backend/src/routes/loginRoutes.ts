@@ -7,6 +7,6 @@ const loginRoutes = Router();
 //   res.status(200).json({ message: 'Alvarez Teste 002' }); // Metodo POST! Usar ThunderClient pra visualizar
 // })
 
-loginRoutes.post('/login', LoginController.login)
+loginRoutes.post('/login', LoginController.login);
 
 export default loginRoutes;
