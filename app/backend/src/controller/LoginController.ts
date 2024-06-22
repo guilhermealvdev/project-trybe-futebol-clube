@@ -20,7 +20,7 @@ class LoginController {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(email) || password.length < 6) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
