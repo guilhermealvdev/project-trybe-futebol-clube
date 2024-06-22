@@ -80,6 +80,66 @@ class MatchService {
     );
     return newMatch;
   }
+
+  // Req 23
+  static async getHomeLeaderboard() {
+    const matches = await this.getFinishedMatches();
+    const teams = await Team.findAll();
+    return teams.map((team) => this.getTeamStats(team, matches));
+  }
+
+  static async getFinishedMatches() {
+    return Match.findAll({
+      where: { inProgress: false },
+      include: [{ model: Team, as: 'homeTeam', attributes: ['teamName'] }],
+    });
+  }
+
+  static getTeamStats(team: Team, matches: Match[]) {
+    const homeMatches = matches.filter((match) => match.homeTeamId === team.id);
+    const totalPoints = this.calculateTotalPoints(homeMatches);
+    const totalGames = homeMatches.length;
+    const totalVictories = this.countVictories(homeMatches);
+    const totalDraws = this.countDraws(homeMatches);
+    const totalLosses = this.countLosses(homeMatches);
+    const goalsFavor = this.calculateGoals(homeMatches, 'homeTeamGoals');
+    const goalsOwn = this.calculateGoals(homeMatches, 'awayTeamGoals');
+
+    return {
+      name: team.teamName,
+      totalPoints,
+      totalGames,
+      totalVictories,
+      totalDraws,
+      totalLosses,
+      goalsFavor,
+      goalsOwn,
+    };
+  }
+
+  static calculateTotalPoints(matches: Match[]) {
+    return matches.reduce((sum, match) => {
+      if (match.homeTeamGoals > match.awayTeamGoals) return sum + 3;
+      if (match.homeTeamGoals === match.awayTeamGoals) return sum + 1;
+      return sum;
+    }, 0);
+  }
+
+  static countVictories(matches: Match[]) {
+    return matches.filter((match) => match.homeTeamGoals > match.awayTeamGoals).length;
+  }
+
+  static countDraws(matches: Match[]) {
+    return matches.filter((match) => match.homeTeamGoals === match.awayTeamGoals).length;
+  }
+
+  static countLosses(matches: Match[]) {
+    return matches.filter((match) => match.homeTeamGoals < match.awayTeamGoals).length;
+  }
+
+  static calculateGoals(matches: Match[], goalType: 'homeTeamGoals' | 'awayTeamGoals') {
+    return matches.reduce((sum, match) => sum + match[goalType], 0);
+  }
 }
 
 export default MatchService;
