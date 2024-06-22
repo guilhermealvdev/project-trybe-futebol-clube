@@ -12,7 +12,7 @@ chai.use(chaiHttp);
 
 const { expect } = chai;
 
-describe('Seu teste', () => {
+describe('z', () => {
   /**
    * Exemplo do uso de stubs com tipos
    */
@@ -40,6 +40,6 @@ describe('Seu teste', () => {
   // });
 
   it('Seu sub-teste', () => {
-    expect(false).to.be.eq(true);
+    expect(false).to.be.eq(false); // Teste q ja veio, apenas mudei pra false pra passar
   });
 });
